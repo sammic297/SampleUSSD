@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request:
-use App\User;
+use Illuminate\Http\Request;
+use App\Models\User;
+use App\Http\Traits\UserMenuTrait;
+use App\Http\Traits\SmsTrait;
+use AfricasTalking\SDK\AfricasTalking;
 
 class UssdController extends Controller
 { 
-  	use UssdMenuTrait;
-  	use SmsTrait;
-
+  	   use UserMenuTrait;
+       use SmsTrait;
+   
 	public function ussdRequestHandler(Request $request)
     {
         $sessionId   = $request["sessionId"];
@@ -44,17 +47,19 @@ class UssdController extends Controller
                 if ($ussd_string_exploded[0] == "1") {
                     // If user selected 1 send them to the registration menu
                     $this->ussd_proceed("Please enter your full name and desired pin separated by commas. \n eg: Jane Doe,1234");
-                } else if ($ussd_string_exploded[0] == "2") {
+                } 
+                else if ($ussd_string_exploded[0] == "2") {
                     //If user selected 2, send them the information
                     $this->ussd_stop("You will receive more information on SampleUSSD via sms shortly.");
                     $this->sendText("This is a subscription service from SampleUSSD.",$phone);
-                } else if ($ussd_string_exploded[0] == "3") {
+                }
+                else if ($ussd_string_exploded[0] == "3") {
                     //If user selected 3, exit
                     $this->ussd_stop("Thank you for reaching out to SampleUSSD.");
                 }
             break;
             case 2:
-                if ($this->ussdRegister($ussd_string_exploded[1], $phone) == "success") {
+                if ($this->ussdRegister($ussd_string_exploded[0], $phone) == "success") {
                     $this->servicesMenu();
                 }
             break;
@@ -135,11 +140,12 @@ class UssdController extends Controller
             return $this->ussd_stop("Login was unsuccessful!");
         }
     }
+
+    public function ussd_proceed($ussd_text) {
+      echo "CON $ussd_text";
+    }
+    public function ussd_stop($ussd_text) {
+      echo "END $ussd_text";
+    }
 }
 
-public function ussd_proceed($ussd_text) {
-  echo "CON $ussd_text";
-}
-public function ussd_stop($ussd_text) {
-  echo "END $ussd_text";
-}
