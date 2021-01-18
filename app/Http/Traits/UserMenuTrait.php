@@ -1,7 +1,7 @@
 <?php
-namespace App\Http\Controllers;
+namespace App\Http\Traits;
 
-trait UssdMenuTrait{
+trait UserMenuTrait{
 
     public function newUserMenu(){
         $start  = "Welcome to SampleUSSD\n";
